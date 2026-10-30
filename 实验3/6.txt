@@ -1,0 +1,39 @@
+1. 初始状态
+
+程序执行 scope_test()，进入函数体。
+
+执行 spam = "原来的值"。此时在 scope_test 的 Enclosing（嵌套外层）作用域 中，创建了一个变量 spam。
+
+2. 调用 do_local()
+
+函数内部执行 spam = "我是局部变量"。因为没有加任何声明，Python 会在 do_local 的 Local（局部作用域） 中新建一个只属于它自己的 spam。
+
+函数执行完毕后，这个局部变量就被销毁了，没有影响到外部的 spam。
+
+因此第一个 print 输出：原来的值。
+
+3. 调用 do_nonlocal()
+
+函数内部第一句是 nonlocal spam。这告诉 Python：“我接下来要用的 spam 不是我的局部变量，而是外层嵌套函数（即 scope_test） 里的那个 spam”。
+
+所以下一句 spam = "我不是局部变量，也不是全局变量" 直接修改了 scope_test 作用域里的 spam。
+
+因此第二个 print 输出：我不是局部变量，也不是全局变量。
+
+4. 调用 do_global()
+
+函数内部第一句是 global spam。这告诉 Python：“我接下来要用的 spam 是最顶层的全局变量”。
+
+所以下一句 spam = "我是全局变量" 会在全局作用域中创建（或修改）一个变量 spam。
+
+注意！ 这里的赋值完全没有影响到 scope_test 里的 spam。scope_test 里的 spam 依然是第三步改过的值。
+
+因此第三个 print（它是在 scope_test 内部调用的）输出依然是：我不是局部变量，也不是全局变量。
+
+5. 函数结束，回到全局
+
+scope_test() 执行完毕，它的局部变量全部被销毁。
+
+执行最后一行 print("全局变量:", spam)。此时程序在全局作用域找 spam，找到了第四步 do_global() 中创建的那个 spam。
+
+因此最后输出：我是全局变量。
